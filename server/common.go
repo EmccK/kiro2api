@@ -173,8 +173,8 @@ func buildCodeWhispererRequest(c *gin.Context, anthropicReq types.AnthropicReque
 
 	// 添加上游请求必需的header
 	req.Header.Set("x-amzn-kiro-agent-mode", "spec")
-	req.Header.Set("x-amz-user-agent", "aws-sdk-js/1.0.18 KiroIDE-0.2.13-66c23a8c5d15afabec89ef9954ef52a119f10d369df04d548fc6c1eac694b0d1")
-	req.Header.Set("user-agent", "aws-sdk-js/1.0.18 ua/2.1 os/darwin#25.0.0 lang/js md/nodejs#20.16.0 api/codewhispererstreaming#1.0.18 m/E KiroIDE-0.2.13-66c23a8c5d15afabec89ef9954ef52a119f10d369df04d548fc6c1eac694b0d1")
+	req.Header.Set("x-amz-user-agent", "aws-sdk-js/1.0.27 KiroIDE-0.7.45-63aad49d63b3fc29a3ef18b04c7302023c1afd118d51654e69dccfbfa92c0a1f")
+	req.Header.Set("user-agent", "aws-sdk-js/1.0.27 ua/2.1 os/darwin#25.1.0 lang/js md/nodejs#22.21.1 api/codewhispererstreaming#1.0.27 m/E KiroIDE-0.7.45-63aad49d63b3fc29a3ef18b04c7302023c1afd118d51654e69dccfbfa92c0a1f")
 
 	return req, nil
 }

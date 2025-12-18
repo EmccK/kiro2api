@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"kiro2api/logger"
@@ -8,7 +10,6 @@ import (
 	"kiro2api/utils"
 	"net/http"
 	"net/url"
-	"time"
 )
 
 // UsageLimitsChecker 使用限制检查器 (遵循SRP原则)
@@ -41,8 +42,8 @@ func (c *UsageLimitsChecker) CheckUsageLimits(token types.TokenInfo) (*types.Usa
 	}
 
 	// 设置请求头 (严格按照token.md中的示例)
-	req.Header.Set("x-amz-user-agent", "aws-sdk-js/1.0.0 KiroIDE-0.2.13-66c23a8c5d15afabec89ef9954ef52a119f10d369df04d548fc6c1eac694b0d1")
-	req.Header.Set("user-agent", "aws-sdk-js/1.0.0 ua/2.1 os/darwin#24.6.0 lang/js md/nodejs#20.16.0 api/codewhispererruntime#1.0.0 m/E KiroIDE-0.2.13-66c23a8c5d15afabec89ef9954ef52a119f10d369df04d548fc6c1eac694b0d1")
+	req.Header.Set("x-amz-user-agent", "aws-sdk-js/1.0.27 KiroIDE-0.7.45-63aad49d63b3fc29a3ef18b04c7302023c1afd118d51654e69dccfbfa92c0a1f")
+	req.Header.Set("user-agent", "aws-sdk-js/1.0.27 ua/2.1 os/darwin#25.1.0 lang/js md/nodejs#22.21.1 api/codewhispererstreaming#1.0.27 m/E KiroIDE-0.7.45-63aad49d63b3fc29a3ef18b04c7302023c1afd118d51654e69dccfbfa92c0a1f")
 	req.Header.Set("host", "codewhisperer.us-east-1.amazonaws.com")
 	req.Header.Set("amz-sdk-invocation-id", generateInvocationID())
 	req.Header.Set("amz-sdk-request", "attempt=1; max=1")
@@ -147,5 +148,18 @@ func (c *UsageLimitsChecker) logUsageLimits(limits *types.UsageLimits) {
 
 // generateInvocationID 生成请求ID (简化版本)
 func generateInvocationID() string {
-	return fmt.Sprintf("%d-%s", time.Now().UnixNano(), "kiro2api")
+	b := make([]byte, 16)
+	rand.Read(b)
+	b[6] = (b[6] & 0x0F) | 0x40
+	b[8] = (b[8] & 0x3F) | 0x80
+
+	hexstr, _ := func(in []byte) (string, error) {
+		dst := make([]byte, hex.EncodedLen(len(in)))
+		hex.Encode(dst, in) // 小写
+		return string(dst), nil
+	}(b)
+
+	return fmt.Sprintf("%s-%s-%s-%s-%s",
+		hexstr[0:8], hexstr[8:12], hexstr[12:16], hexstr[16:20], hexstr[20:32],
+	)
 }
